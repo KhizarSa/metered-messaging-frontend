@@ -4,6 +4,7 @@ import Login from './ui/Login';
 import Signup from './ui/Signup';
 import Home from './ui/Home';
 import CredentialsState from './context/credentialsState';
+import Dashboard from './ui/Dashboard';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/dashboard',
+    element: <Dashboard />,
   },
 ]);
 

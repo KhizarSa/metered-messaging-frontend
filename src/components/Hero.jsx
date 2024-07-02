@@ -9,7 +9,10 @@ const Hero = () => {
     backgroundPosition: 'center',
   };
   return (
-    <section className="grid h-screen w-full grid-cols-2 items-center justify-center bg-white text-violet-600">
+    <section
+      id="hero"
+      className="grid h-screen w-full grid-cols-2 items-center justify-center bg-white text-violet-600"
+    >
       <div className="p-12">
         <h1 className="mb-8 text-4xl font-bold">Welcome to Metered Messages</h1>
         <p className="mb-12 text-lg text-gray-600">

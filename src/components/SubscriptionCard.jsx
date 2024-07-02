@@ -1,8 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import credentialsContext from '../context/credentialsContext';
+import Popup from './Popup';
 
 const SubscriptionCard = ({ priceId, heading, description, features }) => {
-  const { createCheckout } = useContext(credentialsContext);
+  const { createCheckout, loggedIn, user } = useContext(credentialsContext);
+  const [displayPopup, setDisplayPopup] = useState(false);
 
   let gradient = '';
 
@@ -14,15 +16,19 @@ const SubscriptionCard = ({ priceId, heading, description, features }) => {
     gradient = 'bg-gradient-to-br from-violet-400 to-violet-600';
   }
 
+  const isSubscribed = user?.subscription === heading;
+
   async function handleCheckout() {
-    if (priceId) {
+    if (loggedIn && priceId) {
       createCheckout(priceId);
+    } else {
+      setDisplayPopup(true);
     }
   }
 
   return (
     <div
-      className={`rounded-lg p-6 pt-10 text-center shadow-lg ${gradient} flex h-96 h-full flex-col justify-between`}
+      className={`rounded-lg p-6 pt-10 text-center shadow-lg ${gradient} h-90 flex flex-col justify-between`}
     >
       <div>
         <h2 className="mb-4 text-2xl font-semibold">{heading}</h2>
@@ -37,10 +43,20 @@ const SubscriptionCard = ({ priceId, heading, description, features }) => {
       </div>
       <button
         onClick={handleCheckout}
-        className="rounded-full bg-white px-6 py-2 text-gray-800 hover:bg-gray-200"
+        disabled={isSubscribed}
+        className={`rounded-full px-6 py-2 ${
+          isSubscribed
+            ? 'cursor-not-allowed bg-gray-400 text-gray-800'
+            : 'bg-white text-gray-800 hover:bg-gray-200'
+        }`}
       >
-        Subscribe
+        {isSubscribed ? 'Subscribed' : 'Subscribe'}
       </button>
+      {displayPopup && (
+        <Popup onClose={() => setDisplayPopup(false)}>
+          You are not signed in.
+        </Popup>
+      )}
     </div>
   );
 };
