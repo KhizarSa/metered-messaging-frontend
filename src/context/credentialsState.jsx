@@ -9,6 +9,9 @@ export default function CredentialsState(props) {
     JSON.parse(localStorage.getItem('user')) || {},
   );
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [isConnected, setIsConnected] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [otherId, setOtherId] = useState('');
 
   const api = 'http://localhost:4500/api/v1/';
 
@@ -116,6 +119,18 @@ export default function CredentialsState(props) {
     }
   }
 
+  async function isUser(email) {
+    const response = await axios.get(`${api}user/isUser/${email}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data.status === 'success') {
+      return response.data.isUser;
+    }
+  }
+
   async function fetchProducts() {
     const response = await axios.get(`${api}product`);
 
@@ -168,14 +183,21 @@ export default function CredentialsState(props) {
         logout,
         deleteMe,
         getMe,
+        isUser,
         fetchProducts,
         createCheckout,
         setToken,
         setUser,
         updateMessages,
+        setMessages,
+        setOtherId,
+        setIsConnected,
         token,
         user,
         loggedIn,
+        messages,
+        otherId,
+        isConnected,
       }}
     >
       {props.children}

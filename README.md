@@ -37,11 +37,12 @@ npm install
 
 ### Configuration
 
-Before running the application, configure your Stripe public key for payment integration:
+Before running the application:
 
-1. Open the ./src/context/credentialsState.jsx file.
-2. Locate the createCheckout function.
-3. Replace the placeholder with your Stripe public key.
+1. In ./src/components/Message.jsx at the top in socket enter your server url and port if local.
+2. Open the ./src/context/credentialsState.jsx file.
+3. Locate the createCheckout function.
+4. Replace the placeholder with your Stripe public key.
 
 ```
 async function createCheckout(priceId) {

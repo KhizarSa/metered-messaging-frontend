@@ -6,14 +6,21 @@ import credentialsContext from '../context/credentialsContext';
 const socket = io('http://localhost:4500'); // Adjust the URL if necessary
 
 const Message = () => {
-  const { updateMessages, user } = useContext(credentialsContext);
-
-  const [isConnected, setIsConnected] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [otherId, setOtherId] = useState('');
+  const {
+    updateMessages,
+    user,
+    isUser,
+    isConnected,
+    setIsConnected,
+    messages,
+    setMessages,
+    otherId,
+    setOtherId,
+  } = useContext(credentialsContext);
   const [roomId, setRoomId] = useState('');
   const [inputMessage, setInputMessage] = useState([]);
   const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     // Listen for incoming messages
@@ -29,21 +36,51 @@ const Message = () => {
     };
   }, [user.email]);
 
-  const handleCreateRoom = () => {
-    setIsConnected(true);
-    setRoomId(`${user.email}-${otherId}`);
-    socket.emit('createRoom', user.email, otherId); // Emit createRoom event with IDs
+  const handleCreateRoom = async () => {
+    if (!otherId) return;
+
+    try {
+      const data = await isUser(otherId);
+      if (data) {
+        setIsConnected(true);
+        setRoomId(`${user.email}-${otherId}`);
+        socket.emit('createRoom', user.email, otherId); // Emit createRoom event with IDs
+      } else {
+        setErrorMsg('No user found with this email');
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error('Error checking user:', error);
+      setErrorMsg('Error checking user');
+      setShowError(true);
+    }
   };
 
-  const handleJoinRoom = () => {
-    setIsConnected(true);
-    setRoomId(`${otherId}-${user.email}`);
-    socket.emit('joinRoom', user.email, otherId); // Emit joinRoom event with IDs
+  const handleJoinRoom = async () => {
+    if (!otherId) return;
+
+    try {
+      const data = await isUser(otherId);
+      console.log(data);
+      if (data) {
+        setIsConnected(true);
+        setRoomId(`${otherId}-${user.email}`);
+        socket.emit('joinRoom', user.email, otherId); // Emit joinRoom event with IDs
+      } else {
+        setErrorMsg('No user found with this email');
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error('Error checking user:', error);
+      setErrorMsg('Error checking user');
+      setShowError(true);
+    }
   };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (user.messagesLimit === 0 || user.messagesUsage === user.messagesLimit) {
+      setErrorMsg('Your Message Limit is 0');
       setShowError(true);
       return;
     }
@@ -167,9 +204,7 @@ const Message = () => {
         </div>
       </div>
       {showError && (
-        <Popup onClose={() => setShowError(false)}>
-          Your Message Limit is 0
-        </Popup>
+        <Popup onClose={() => setShowError(false)}>{errorMsg}</Popup>
       )}
     </div>
   );
